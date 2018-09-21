@@ -1,0 +1,89 @@
+#!/bin/bash
+
+ assignUniProxy(){
+   PROXY_ENV="http_proxy ftp_proxy https_proxy socks_proxy HTTP_PROXY HTTPS_PROXY FTP_PROXY SOCKS_PROXY"
+   for envar in $PROXY_ENV
+   do
+      export $envar=$1
+   done
+   for envar in "no_proxy NO_PROXY"
+   do
+      export $envar=$2
+   done
+ }
+
+ clrProxy(){
+    PROXY_ENV="http_proxy ftp_proxy https_proxy socks_proxy HTTP_PROXY HTTPS_PROXY FTP_PROXY SOCKS_PROXY"
+    for envar in $PROXY_ENV
+    do
+       unset $envar
+    done
+ }
+
+ uniProxy(){
+   proxy_value="http://cachex.pdn.ac.lk:3128"
+   no_proxy_value="localhost,127.0.0.1"
+   assignUniProxy $proxy_value $no_proxy_value
+ }
+
+ setProxy(){
+   exec sudo bash /opt/ProxyMan/environment.sh "cachex.pdn.ac.lk" "3128" "y" "n" "" "" "" "" "" ""
+   exec sudo "systemctl restart lxdm"
+ }
+
+ remProxy(){
+   exec sudo bash /opt/ProxyMan/environment.sh "unset" "" "" "" "" "" "" "" "" "" && sudo systemctl restart lxdm
+ }
+ 
+extend-right(){
+   xrandr --output LVDS1 --auto --primary --output $1 --auto --right-of LVDS1 
+}
+
+extend-left(){
+   xrandr --output LVDS1 --auto --primary --output $1 --auto --left-of LVDS1 
+}
+
+extend-clone(){
+   xrandr --output $2 --same-as $1
+}
+
+extend-off(){
+   xrandr --output $1 --off
+}
+
+d-link(){
+   aria2c -x 3 "$1"
+}
+
+b-link(){
+   aria2c -x 3 -P -Z "$1"
+}
+
+howto(){
+	if [ -z "$1" ]
+	then
+		echo setProxy - set the proxy \(needs to relogin\)
+		echo remProxy - remove the proxy \(needs to relogin\)
+		echo extend-right DISPLAY_PORT - extend the disply at DISPLAY_PORT to the right of the main display
+		echo extend-left DISPLAY_PORT - extend the disply at DISPLAY_PORT to the left of the main display
+		echo extend-clone DISPLAY_FROM DISPLAY_TO - duplicate the display at DISPLAY_FROM to the disply at DISPLAY_TO
+		echo extend-off DISPLAY_PORT - remove the extended display at DISPLAY_PORT
+	elif [ "$1" = "extend-right" ]
+	then
+		echo  extend-right DISPLAY_PORT 
+	elif [ "$1" = "extend-left" ]
+	then
+		echo  extend-left DISPLAY_PORT 
+	elif [ "$1" = "extend-clone" ]
+	then
+		echo  extend-clone DISPLAY_FROM DISPLAY_TO
+	elif [ "$1" = "extend-off" ]
+	then
+		echo  extend-off DISPLAY_PORT 
+	fi
+
+}
+
+
+
+
